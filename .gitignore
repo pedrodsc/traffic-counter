@@ -1,0 +1,6 @@
+# Para os arquivos de video
+*.mp4
+# Para os pesos do yolo
+*.weights
+# Checkpoints do tensorflow
+*.tf.*
