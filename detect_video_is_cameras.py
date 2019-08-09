@@ -30,7 +30,10 @@ def get_rects(img_shape, outputs):
     wh = np.flip(img_shape)
     wh = np.append(wh,wh)
     rect = boxes * wh
-
+    rect = rect.flatten()
+    rect = np.trim_zeros(rect)
+    rect = np.reshape(rect,(int(rect.shape[0]/4),4))
+    
     return rect
 
 config = tf.compat.v1.ConfigProto()
@@ -63,7 +66,7 @@ def main(_argv):
     times = []
 
     # Connect to the broker
-    broker = "ampq://guest:guest@10.10.2.1:30000"
+    broker = "ampq://guest:guest@10.10.2.3:30000"
     channel = Channel(broker)
     
     # Subscribe to the desired topic
@@ -118,10 +121,10 @@ def main(_argv):
         tracker_time = 'tracker {:.4f}'.format(t5 - t4)
         frame_time = 'total {:.4f}'.format(t6 - t1)
         
-        cv2.putText(img_to_draw, msg_time, (40,40), cv2.FONT_HERSHEY_COMPLEX, 1, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, yolo_time, (40,60), cv2.FONT_HERSHEY_COMPLEX, 1, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 1, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 1, (10, 10, 10), 2)
+        cv2.putText(img_to_draw, msg_time, (40,40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
+        cv2.putText(img_to_draw, yolo_time, (40,60), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
+        cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
+        cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         
         out.write(img_to_draw)
         
