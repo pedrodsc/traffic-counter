@@ -1,2 +1,8 @@
 # traffic-counter
-Contador de objetos em vídeo usando YOLO via Darknet
+A ideia é contar veículos e pedestres que trafegam numa via pelo vídeomonitoramento.
+
+### Pré-requisitos
+- numpy
+- tensorflow
+- OpenCV
+- yolov3.weights
