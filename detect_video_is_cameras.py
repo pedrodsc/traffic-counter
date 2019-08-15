@@ -9,9 +9,10 @@ from yolov3_tf2.models import (
 )
 from yolov3_tf2.dataset import transform_images
 from yolov3_tf2.utils import draw_outputs
-from is_wire.core import Channel, Subscription
+from is_wire.core import Channel, Subscription, Message
 from is_msgs.image_pb2 import Image
 from pyimagesearch.centroidtracker import CentroidTracker
+from image_tools import to_image
 from pprint import pprint
 
 def get_np_image(input_image):
@@ -66,7 +67,7 @@ def main(_argv):
     times = []
 
     # Connect to the broker
-    broker = "ampq://guest:guest@10.10.2.3:30000"
+    broker = "ampq://guest:guest@10.10.2.1:30000"
     channel = Channel(broker)
     
     # Subscribe to the desired topic
@@ -76,9 +77,10 @@ def main(_argv):
     
     #fourcc = cv2.VideoWriter_fourcc(*'MJPG')
     #fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    out = cv2.VideoWriter(FLAGS.output,fourcc, 5.0, (1288,728))
-    for i in range(FLAGS.nframes):
+    #fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    #out = cv2.VideoWriter(FLAGS.output,fourcc, 5.0, (1288,728))
+    #for i in range(FLAGS.nframes):
+    while True:
         t1 = time.time()
         
         msg = channel.consume()
@@ -126,9 +128,14 @@ def main(_argv):
         cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         
-        out.write(img_to_draw)
         
-    out.release()
+        yolo_msg = Message()
+        yolo_msg.pack(to_image(img_to_draw))
+        channel.publish(yolo_msg, 'Yolo.'+FLAGS.camera+'.Frame')
+        
+        #out.write(img_to_draw)
+        
+    #out.release()
 
 if __name__ == '__main__':
     try:
