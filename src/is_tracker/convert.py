@@ -4,8 +4,8 @@ import numpy as np
 from yolov3_tf2.models import YoloV3, YoloV3Tiny
 from yolov3_tf2.utils import load_darknet_weights
 
-flags.DEFINE_string('weights', './data/yolov3.weights', 'path to weights file')
-flags.DEFINE_string('output', './checkpoints/yolov3.tf', 'path to output')
+flags.DEFINE_string('weights', '../../etc/data/yolov3.weights', 'path to weights file')
+flags.DEFINE_string('output', '../../etc/checkpoints/yolov3.tf', 'path to output')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 
 

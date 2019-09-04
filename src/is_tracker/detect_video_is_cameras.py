@@ -42,8 +42,8 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
 
-flags.DEFINE_string('classes', './data/coco.names', 'path to classes file')
-flags.DEFINE_string('weights', './checkpoints/yolov3.tf','path to weights file')
+flags.DEFINE_string('classes', '../../etc/data/coco.names', 'path to classes file')
+flags.DEFINE_string('weights', '../../etc/checkpoints/yolov3.tf','path to weights file')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 flags.DEFINE_integer('size', 416, 'resize images to')
 flags.DEFINE_string('camera', '1', 'camera id')
