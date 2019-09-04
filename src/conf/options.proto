@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+message YOLOOptions {
+    required string classes_file = 1 //"../../etc/data/coco.names"
+    required string weights_file = 2 //"../../etc/checkpoints/yolov3.tf"
+    optional bool tiny = 3 //"False"
+    optional uint32 size = 4 //"416"
+}
+
+message TrackerOptions {
+    optional int32 camera = 1;
+    optional YOLOOptions = 2;
+}

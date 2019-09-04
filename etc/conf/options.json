@@ -1,0 +1,9 @@
+{
+
+"classes_file" : "../../etc/data/coco.names",
+"weights_file" : "../../etc/checkpoints/yolov3.tf",
+"tiny" : "False",
+"size" : "416",
+"camera" : "1"
+
+}
