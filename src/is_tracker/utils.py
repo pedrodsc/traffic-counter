@@ -1,10 +1,13 @@
 from google.protobuf.json_format import Parse
 from options_pb2 import TrackerOptions
+from is_msgs.image_pb2 import Image
+import numpy as np
+import cv2
 import sys
 
 
 def load_options():
-    op_file = sys.argv[1] if len(sys.argv) > 1 else 'options.json' 
+    op_file = sys.argv[1] if len(sys.argv) > 1 else '../../etc/conf/options.json' 
     try:
         with open(op_file, 'r') as f:
             try:

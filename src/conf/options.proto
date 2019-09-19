@@ -9,5 +9,6 @@ message YOLO {
 
 message TrackerOptions {
     string camera_id = 1;
-    YOLO YOLO = 2;
+    string broker = 2;
+    YOLO YOLO = 3;
 }
