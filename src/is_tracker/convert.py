@@ -8,7 +8,6 @@ flags.DEFINE_string('weights', '../../etc/data/yolov3.weights', 'path to weights
 flags.DEFINE_string('output', '../../etc/checkpoints/yolov3.tf', 'path to output')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
 
-
 def main(_argv):
     if FLAGS.tiny:
         yolo = YoloV3Tiny()
@@ -26,7 +25,6 @@ def main(_argv):
 
     yolo.save_weights(FLAGS.output)
     logging.info('weights saved')
-
 
 if __name__ == '__main__':
     try:

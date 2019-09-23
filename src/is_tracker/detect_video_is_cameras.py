@@ -19,7 +19,7 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
 
-centroidTracker = CentroidTracker(20)
+centroidTracker = CentroidTracker(20) # Descarta um objeto após 20 frames sem reaparecer
 
 def main():
     
@@ -33,21 +33,19 @@ def main():
         yolo = YoloV3()
         
     yolo.load_weights(trackerOptions.YOLO.weights)
-    #logging.info('weights loaded')
+    print('weights loaded')
 
     class_names = [c.strip() for c in open(trackerOptions.YOLO.classes).readlines()]
-    #logging.info('classes loaded')
+    print('classes loaded')
 
     times = []
 
-    # Connect to the broker
-    broker = "ampq://guest:guest@10.10.2.1:30000"
+    broker = trackerOptions.broker
     channel = Channel(broker)
     
-    # Subscribe to the desired topic
     subscription = Subscription(channel)
-    ## Trocar camera por camera_id e camera_id por camera_frame
-    camera_frame = "CameraGateway."+trackerOptions.camera_id+".Frame"
+
+    camera_frame = "CameraGateway."+str(trackerOptions.camera_id)+".Frame"
     subscription.subscribe(topic=camera_frame)
     
     while True:
@@ -61,7 +59,6 @@ def main():
         img = get_np_image(img)
         img_to_draw = img
         
-        #img = tf.image.decode_image(img, channels=3)
         img = tf.expand_dims(img, 0)
         img = transform_images(img, trackerOptions.YOLO.size)
 
@@ -69,8 +66,8 @@ def main():
         boxes, scores, classes, nums = yolo.predict(img)
         t4 = time.time()
 
-        #for i in range(nums[0]):
-            #logging.info('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
+        for i in range(nums[0]):
+            print('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
             
         rects = get_rects(img_to_draw.shape[0:2], (boxes, scores, classes, nums))
         
@@ -80,13 +77,12 @@ def main():
         
         img_to_draw = draw_outputs(img_to_draw, (boxes, scores, classes, nums), class_names)
         
-        # loop over the tracked objects
         for (objectID, centroid) in objects.items():
-            # draw both the ID of the object and the centroid of the object on the output frame
             text = "{}".format(objectID)
             cv2.putText(img_to_draw, text, (centroid[0], centroid[1]), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 240, 0), 4)
         
         t6 = time.time()
+        
         msg_time = 'consume {:.4f}'.format(t2 - t1)
         yolo_time = 'yolo {:.4f}'.format(t4 - t3)
         tracker_time = 'tracker {:.4f}'.format(t5 - t4)
@@ -97,10 +93,9 @@ def main():
         cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         
-        
         yolo_msg = Message()
         yolo_msg.pack(to_image(img_to_draw))
-        channel.publish(yolo_msg, 'Yolo.'+trackerOptions.camera_id+'.Frame')
+        channel.publish(yolo_msg, 'Yolo.'+str(trackerOptions.camera_id)+'.Frame')
         
 if __name__ == '__main__':
     try:
