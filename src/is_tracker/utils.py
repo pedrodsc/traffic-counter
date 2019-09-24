@@ -7,7 +7,7 @@ import sys
 
 
 def load_options():
-    op_file = sys.argv[1] if len(sys.argv) > 1 else '../../etc/conf/options.json' 
+    op_file = sys.argv[1] if len(sys.argv) > 1 else '/home/is-tracker/etc/conf/options.json' 
     try:
         with open(op_file, 'r') as f:
             try:

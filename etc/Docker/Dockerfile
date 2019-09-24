@@ -102,6 +102,9 @@ RUN ${PIP} --no-cache-dir install --upgrade \
     is-wire \
     scipy
 
+# This line fixes a bug in the new version of gast
+RUN pip install -U gast==0.2.2
+
 # Some TF tools expect a "python" binary
 RUN ln -s $(which ${PYTHON}) /usr/local/bin/python
 
