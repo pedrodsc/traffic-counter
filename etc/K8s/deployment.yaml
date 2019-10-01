@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1 
+kind: Deployment
+metadata:
+  name: is-tracker
+spec:
+  replicas: 1 
+  template:
+    metadata:
+      labels:
+        app: is-tracker 
+    spec:
+      containers:
+      - name: container-name 
+        image: pedrovdsc/is-tracker:0.0.1
+        command: ["python"]
+        args: ["/home/is-tracker/src/is_tracker/detect_video_is_cameras.py"]
+        imagePullPolicy: Always
+        resources:
+          limits: 
+            cpu: "4.0"
+            memory: 1536Mi
