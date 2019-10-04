@@ -1,3 +1,6 @@
+# TODO Criar um Yolo.1.BBox com todos os objetos detectados
+# Usar protobuf??
+
 import time
 import cv2
 import tensorflow as tf
@@ -93,9 +96,26 @@ def main():
         cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         
-        yolo_msg = Message()
-        yolo_msg.pack(to_image(img_to_draw))
-        channel.publish(yolo_msg, 'Yolo.'+str(trackerOptions.camera_id)+'.Frame')
+        # Publica BBox - protótipo
+        
+        #yolo_bbox_msg = Message()
+        #yolo_bbox_msg.pack(object annotation)
+        # O object annotation contem o nome da classe, confiança, x1,y1,x2,y2 (0 <= x e y <= 1)
+        # O Vetor de bbox
+        
+        # Olhar o object_anottation em https://github.com/labviros/is-skeletons-detector/blob/master/src/is_skeletons_detector/skeletons.py
+        
+        #channel.publish(yolo_bbox_msg, 'Yolo.'+str(trackerOptions.camera_id)+'.BBox')
+        
+        ##
+        
+        # Publica imagem ##
+        yolo_rendered = Message()
+        yolo_rendered.pack(to_image(img_to_draw))
+        channel.publish(yolo_rendered, 'Yolo.'+str(trackerOptions.camera_id)+'.Frame')
+        
+        ##
+        
         
 if __name__ == '__main__':
     try:
