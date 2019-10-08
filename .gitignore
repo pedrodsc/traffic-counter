@@ -6,3 +6,4 @@
 *.tf.*
 # pycache
 __pycache__/
+*.pyc
