@@ -70,7 +70,7 @@ def main():
         t4 = time.time()
 
         for i in range(nums[0]):
-            print('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
+            #print('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
             
         rects = get_rects(img_to_draw.shape[0:2], (boxes, scores, classes, nums))
         
