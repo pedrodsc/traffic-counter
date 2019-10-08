@@ -4,3 +4,5 @@
 *.weights
 # Checkpoints do tensorflow
 *.tf.*
+# pycache
+__pycache__/
