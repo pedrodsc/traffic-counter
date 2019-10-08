@@ -1,0 +1,19 @@
+syntax = "proto3"
+
+message BBox {
+	float x1 = 1;	 
+	float y1 = 2;
+	float x2 = 3;
+	float y2 = 4;
+}
+
+message DetectedObject {
+	uint32 ID = 1;
+	string className = 2;
+	float confidence = 3;
+	BBox bbox = 4;
+}
+
+message DetectedObjectList {
+	repeated DetectedObject detectedObject = 2;
+}
