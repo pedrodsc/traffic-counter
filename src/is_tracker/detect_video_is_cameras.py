@@ -1,5 +1,4 @@
 # TODO Criar um Yolo.1.BBox com todos os objetos detectados
-# Usar protobuf??
 
 import time
 import cv2
@@ -7,7 +6,6 @@ import tensorflow as tf
 import numpy as np
 
 from is_wire.core import Channel, Subscription, Message
-from is_msgs.image_pb2 import Image
 from pprint import pprint
 
 from yolov3_tf2.models import (YoloV3, YoloV3Tiny)
@@ -69,7 +67,7 @@ def main():
         boxes, scores, classes, nums = yolo.predict(img)
         t4 = time.time()
 
-        for i in range(nums[0]):
+       # for i in range(nums[0]):
             #print('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
             
         rects = get_rects(img_to_draw.shape[0:2], (boxes, scores, classes, nums))
@@ -102,6 +100,8 @@ def main():
         #yolo_bbox_msg.pack(object annotation)
         # O object annotation contem o nome da classe, confiança, x1,y1,x2,y2 (0 <= x e y <= 1)
         # O Vetor de bbox
+        # Para agregar a BBox à imagem, usar o msg.created_at. AKA timestamp
+        # Em miúdos, passar o msg.created_at pra frente
         
         # Olhar o object_anottation em https://github.com/labviros/is-skeletons-detector/blob/master/src/is_skeletons_detector/skeletons.py
         
