@@ -1,4 +1,5 @@
 # TODO Criar um Yolo.1.BBox com todos os objetos detectados
+# Leia a linha 98
 
 import time
 import cv2
@@ -94,28 +95,37 @@ def main():
         cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
         
+        # TODO
         # Publica BBox - protótipo
         
         #yolo_bbox_msg = Message()
         #yolo_bbox_msg.pack(object annotation)
         # O object annotation contem o nome da classe, confiança, x1,y1,x2,y2 (0 <= x e y <= 1)
-        # O Vetor de bbox
-        # Para agregar a BBox à imagem, usar o msg.created_at. AKA timestamp
-        # Em miúdos, passar o msg.created_at pra frente
-        
+        # 
+        # ObjectAnnotations <= ObjectAnnotation {
+                                #   label <= classe
+                                #   id <= id dado pelo tracker
+                                #   score <= confiança
+                                #   region.BoundingPoly <= x1,y1,x2,y2
+                                #   keypoints <= ?? Centroid? }
+        # resolution.height <= img.height
+        # resolution.width <= img.width
+        # frame_id <= numero do frame atual desde o inicio do programa
+        #             associar isso de alguma forma com o msg.created_at
+        #             por enquanto.
+        # 
         # Olhar o object_anottation em https://github.com/labviros/is-skeletons-detector/blob/master/src/is_skeletons_detector/skeletons.py
         
-        #channel.publish(yolo_bbox_msg, 'Yolo.'+str(trackerOptions.camera_id)+'.BBox')
+        #channel.publish(yolo_bbox_msg, 'Tracker.'+str(trackerOptions.camera_id)+'.BBox')
         
         ##
         
         # Publica imagem ##
         yolo_rendered = Message()
         yolo_rendered.pack(to_image(img_to_draw))
-        channel.publish(yolo_rendered, 'Yolo.'+str(trackerOptions.camera_id)+'.Frame')
+        channel.publish(yolo_rendered, 'Tracker.'+str(trackerOptions.camera_id)+'.Frame')
         
         ##
-        
         
 if __name__ == '__main__':
     try:
