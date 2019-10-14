@@ -1,5 +1,11 @@
-# TODO Criar um Yolo.1.BBox com todos os objetos detectados
-# Leia a linha 98
+# TODO 
+# 
+# 1. Criar um "10.10.2.1:30300/Tracker.1.BBox" com todos os objetos detectados
+# 2. Trocar o centroidTracker para o Tracker com filtro de Kalman
+# 3.Editar o Yolo para retornar um detectedObjects mais legivel do que o atual Yolo.predict()
+#   possivelmente criando uma função mãe para chamar (Yolo.detect()??)
+# 4. Trocar os nomes das instancias de Yolo para detector e tracker onde for aplicavel
+# Leia a linha 103
 
 import time
 import cv2
@@ -7,6 +13,7 @@ import tensorflow as tf
 import numpy as np
 
 from is_wire.core import Channel, Subscription, Message
+from is_msgs.image_pb2 import ObjectAnnotations
 from pprint import pprint
 
 from yolov3_tf2.models import (YoloV3, YoloV3Tiny)
@@ -14,7 +21,7 @@ from yolov3_tf2.dataset import transform_images
 from yolov3_tf2.utils import draw_outputs
 from pyimagesearch.centroidtracker import CentroidTracker
 from image_tools import to_image
-from utils import load_options, get_np_image, get_rects
+from utils import load_options, get_np_image, get_rects, to_object_annotations
 
 config = tf.compat.v1.ConfigProto()
 #config.gpu_options.per_process_gpu_memory_fraction = 0.8
@@ -100,7 +107,7 @@ def main():
         
         #yolo_bbox_msg = Message()
         #yolo_bbox_msg.pack(object annotation)
-        # O object annotation contem o nome da classe, confiança, x1,y1,x2,y2 (0 <= x e y <= 1)
+        # O object annotation contem o nome da classe, confiança, x1,y1,x2,y2
         # 
         # ObjectAnnotations <= ObjectAnnotation {
                                 #   label <= classe
