@@ -30,8 +30,8 @@ def get_np_image(input_image):
     return output_image
 
 def get_rects(img_shape, outputs):
-    boxes, objectness, classes, nums = outputs
-    boxes, objectness, classes, nums = boxes[0], objectness[0], classes[0], nums[0]
+    boxes, score, classes, nums = outputs
+    boxes, score, classes, nums = boxes[0], score[0], classes[0], nums[0]
     wh = np.flip(img_shape)
     wh = np.append(wh,wh)
     rect = boxes * wh
