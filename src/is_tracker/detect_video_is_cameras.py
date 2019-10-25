@@ -13,15 +13,15 @@ import tensorflow as tf
 import numpy as np
 
 from is_wire.core import Channel, Subscription, Message
-from is_msgs.image_pb2 import ObjectAnnotations
+from is_msgs.image_pb2 import ObjectAnnotations, Image
 from pprint import pprint
 
 from yolov3_tf2.models import (YoloV3, YoloV3Tiny)
 from yolov3_tf2.dataset import transform_images
 from yolov3_tf2.utils import draw_outputs
 from pyimagesearch.centroidtracker import CentroidTracker
-from image_tools import to_image
-from utils import load_options, get_np_image, get_rects, to_object_annotations
+
+from utility import load_options, get_np_image, get_rects, to_object_annotations, to_image
 
 config = tf.compat.v1.ConfigProto()
 #config.gpu_options.per_process_gpu_memory_fraction = 0.8
@@ -50,17 +50,22 @@ def main():
     times = []
 
     broker = trackerOptions.broker
+    print("broker: {}".format(broker))
     channel = Channel(broker)
     
     subscription = Subscription(channel)
 
-    camera_frame = "CameraGateway."+str(trackerOptions.camera_id)+".Frame"
-    subscription.subscribe(topic=camera_frame)
+    topic = "CameraGateway."+str(trackerOptions.camera_id)+".Frame"
+    print("topic: {}".format(topic))
+    
+    subscription.subscribe(topic=topic)
+    print("subscribed")
     
     while True:
-        t1 = time.time()
         
+        t1 = time.time()
         msg = channel.consume()
+        print("msg consumed")
         img = msg.unpack(Image)
         
         t2 = time.time()

@@ -84,12 +84,12 @@ class Tracker(object):
         
         for i in range(nums):
             box = boxes[i]
+            #                               |bx1|
+            #  |Cx| = |w/2  0  w/2 0  |  *  |by1|
+            #  |Cy|   | 0  h/2  0 h/2 |     |bx2|
+            #                               |by2|
             centroids[i] = self.centroidMatrix.dot(box)
             
-            #  |Cx|   |w/2  0  w/2 0  |     |bx1|
-            #  |Cy| = | 0  h/2  0 h/2 |  *  |by1|
-            #                               |bx2|
-            #                               |by2|
         
         
         
