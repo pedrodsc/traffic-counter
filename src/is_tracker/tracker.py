@@ -2,13 +2,21 @@ import numpy as np
 from numpy.linalg import inv
 from collections import OrderedDict
 
-from utils import get_rects
+class TrackedObject(object):
+    def __init__(self,className,objectID,x,y):
+        self.className = className
+        self.objectID = objectID
+        self.score = 0
+        # Covariance matrix
+        self.P = np.eye(6)
+        self.x = np.array([x,y,0,0,0,0],dtype=np.float)
+        self.z = self.x[0:2]
 
 class Kalman(object):
-  def __init__(self,R,Q,dt):
+  def __init__(self,R_var=0.1,Q_var=0.1,dt=0.1):
     
-    self.R = R # Measure noise
-    self.Q = Q # Process noise
+    self.R = np.eye(2)*R_var # Measure noise
+    self.Q = np.eye(6)*Q_var # Process noise
     
     # Matrix to extract Cx and Cy from vector x
     self.H = np.array([[1., 0, 0, 0, 0, 0],[0., 1., 0, 0, 0, 0]])
@@ -25,25 +33,16 @@ class Kalman(object):
     trackedObject.x = self.A.dot(trackedObject.x) # (C.5)
     trackedObject.P = self.A.dot(trackedObject.P).dot(self.A.T) + self.Q # (C.6)
   
-  def update(self,trackedObject,z):
+  def update(self,trackedObject):
     
     S = self.H.dot(trackedObject.P).dot(self.H.T) + self.R # (C.9)
     K = trackedObject.P.dot(self.H.T).dot(inv(S)) # (C.9)
-    y = z - self.H.dot(trackedObject.x) # (C.10)
+    y = trackedObject.z - self.H.dot(trackedObject.x) # (C.10)
     trackedObject.x = trackedObject.x + K.dot(y) # (C.10)
     trackedObject.P = trackedObject.P - K.dot(self.H).dot(trackedObject.P) # (C.11)
 
-class TrackedObject(object):
-    def __init__(self,className,objectID,x,y):
-        self.className = className
-        self.objectID = objectID
-        self.score = 0
-        # Covariance matrix
-        self.P = np.eye(6)
-        self.x = np.array([[x,y,0,0,0,0]]).T
-
 class Tracker(object):
-    def __init__(self, maxMissingFrames = 20, img_shape):
+    def __init__(self, img_shape, maxMissingFrames = 20):
         # Lista, vetor ou dicionário de objetos sendo trackeados
         self.trackedObjects = OrderedDict()
         # Numero de objetos já trackeados
@@ -89,13 +88,9 @@ class Tracker(object):
             #  |Cy|   | 0  h/2  0 h/2 |     |bx2|
             #                               |by2|
             centroids[i] = self.centroidMatrix.dot(box)
-            
-        
-        
-        
+
         pass
     
     def update(self): ## Vai se chamar update?
         pass
         # Roda o update de todos os objetos detectados
-    
