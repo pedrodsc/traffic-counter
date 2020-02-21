@@ -1,8 +1,14 @@
 from absl import app, flags, logging
 from absl.flags import FLAGS
 import numpy as np
+import tensorflow as tf
 from yolov3_tf2.models import YoloV3, YoloV3Tiny
 from yolov3_tf2.utils import load_darknet_weights
+
+config = tf.compat.v1.ConfigProto()
+#config.gpu_options.per_process_gpu_memory_fraction = 0.8
+config.gpu_options.allow_growth = True
+sess = tf.compat.v1.Session(config=config)
 
 flags.DEFINE_string('weights', '../../etc/data/yolov3.weights', 'path to weights file')
 flags.DEFINE_string('output', '../../etc/checkpoints/yolov3.tf', 'path to output')
