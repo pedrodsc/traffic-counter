@@ -12,27 +12,27 @@ from utility import load_options, to_image
 #####
 
 class particle():
-    __init__(self, x, y):
+    def __init__(self, x, y):
         self.pos = np.array([x,y])
-        self.vel = np.array([0,0])
+        self.vel = np.array([0.,0])
     
     def move(self):
         self.pos += self.vel
         self.vel += np.random.randn(2)
 
 class particleGenerator():
-    __init__(self, population_size = 10, canvas = (800,600))
-        population = []
+    def __init__(self, population_size = 10, canvas = (800,600)):
+        self.population = []
         for i in range(population_size):
             x = np.random.rand()*canvas[0]
             y = np.random.rand()*canvas[1]
             
-            population.append(particle(x,y)
-    def move_particles(self)
-        for p in population:
+            self.population.append(particle(x,y))
+    def move(self):
+        for p in self.population:
             p.move()
     
-    def get_positions(self)
+    def positions(self):
         return [p.pos for p in self.population]
 
 #####
@@ -44,6 +44,10 @@ radius = 5
 color = (0,0,255)
 
 kalmanFilter = Kalman()
+particles = particleGenerator()
+trackedList = []
+for idx, p in enumerate(particles.positions()):
+    trackedList.append(TrackedObject('Dot',idx,p.pos[1],p.pos[2]))
 
 def main():
     trackerOptions = load_options()
@@ -53,13 +57,14 @@ def main():
 
     while True:
         img_to_draw = np.ones((img_height,img_width,3))*255
-                
-        for p in particles:
-            img_to_draw = cv2.circle(img_to_draw, (int(p.z[0]),int(p.z[1])), radius, color, -1)
-            move(p)
-            kalmanFilter.predict(p)
-            kalmanFilter.update(p)
-            cv2.putText(img_to_draw, '+', (int(p.x[0]),int(p.x[1])), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 255, 0), 1)
+        # TODO 
+        # get objects in new frame
+        # predict
+        # associate objects based on prediction
+        # update kalman
+
+        particles.move()
+        
             
         tracker_rendered = Message()
         tracker_rendered.pack(to_image(img_to_draw))
@@ -73,3 +78,9 @@ if __name__ == '__main__':
         main()
     except SystemExit:
         pass
+
+# for p in particles.population:
+#             img_to_draw = cv2.circle(img_to_draw, (int(p.pos[0]),int(p.pos[1])), radius, color, -1)
+#             kalmanFilter.predict(p)
+#             kalmanFilter.update(p)
+#             cv2.putText(img_to_draw, '+', (int(p.pos[0]),int(p.pos[1])), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 255, 0), 1)

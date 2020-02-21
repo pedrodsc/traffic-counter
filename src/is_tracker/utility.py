@@ -44,9 +44,8 @@ def to_image(input_image, encode_format='.jpeg', compression_level=0.8):
     else:
         return Image()
 
-def get_rects(img_shape, outputs):
-    boxes, score, classes, nums = outputs
-    boxes, score, classes, nums = boxes[0], score[0], classes[0], nums[0]
+def get_rects(img_shape, boxes):
+    boxes = boxes[0]
     wh = np.flip(img_shape)
     wh = np.append(wh,wh)
     rect = boxes * wh
