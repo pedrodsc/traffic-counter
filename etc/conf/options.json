@@ -1,6 +1,6 @@
 {
     "camera_id" : "1",
-    "broker" : "ampq://guest:guest@10.10.2.1:30000",
+    "broker" : "ampq://guest:guest@192.168.1.102:30000",
     "YOLO" : {
         "classes" : "/home/is-tracker/etc/data/coco.names",
         "weights" : "/home/is-tracker/etc/checkpoints/yolov3.tf",
