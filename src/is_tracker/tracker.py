@@ -16,7 +16,7 @@ class TrackedObject(object):
         self.z = self.x[0:2]
 
 class Kalman(object):
-  def __init__(self,R_var=0.5,Q_var=0.1,dt=0.05):
+  def __init__(self,R_var=0.5,Q_var=0.1,dt=0.1):
     
     self.R = np.eye(2)*R_var # Measure noise
     self.Q = np.eye(6)*Q_var # Process noise
@@ -63,7 +63,7 @@ class Tracker(object):
         self.centroid_matrix = np.array([[w/2,0,w/2,0],[0,h/2,0,h/2]],dtype=np.float)
 
         self.kalman = Kalman()
-        pass
+        
     
     def register(self, class_name, score, centroid):
         x_pos = centroid[0]
@@ -71,12 +71,11 @@ class Tracker(object):
         self.tracked_objects[self.next_obj_ID] = TrackedObject(self.next_obj_ID,class_name,score,x_pos,y_pos)
         self.next_obj_ID += 1
         self.objects_being_tracked += 1
-        pass
+        
     
     def deregister(self, object_ID):
         self.tracked_objects.pop(object_ID)
         self.objects_being_tracked -= 1
-        pass
     
     def dataAssociation(self, detected_objects):
         # Associa os novos dados aos objetos antigos
@@ -208,12 +207,12 @@ class Tracker(object):
             # objetos registrados que atingiram o max_missing_frames são desassociados
             # os objetos detectados nao associados sao registradosksys.
             
-            for (obj_id,tr_obj) in self.tracked_objects.items():
-                print('id:{}, class={}, Xpos({},{}), Zpos({},{})'.format(obj_id,tr_obj.class_name,int(tr_obj.x[0]),int(tr_obj.x[1]),int(tr_obj.z[0]),int(tr_obj.z[1])))
-            print(D)
-            pass
+            # for (obj_id,tr_obj) in self.tracked_objects.items():
+            #     print('id:{}, class={}, Xpos({},{}), Zpos({},{})'.format(obj_id,tr_obj.class_name,int(tr_obj.x[0]),int(tr_obj.x[1]),int(tr_obj.z[0]),int(tr_obj.z[1])))
+            # print(D)
+            
     
     def update(self, detected_objects): ## Vai se chamar update?
         self.dataAssociation(detected_objects)
-        pass
+        
         # Roda o update de todos os objetos detectados

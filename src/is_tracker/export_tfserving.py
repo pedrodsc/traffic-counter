@@ -13,12 +13,14 @@ from tensorflow.python.eager import def_function
 from tensorflow.python.framework import tensor_spec
 from tensorflow.python.util import nest
 
-flags.DEFINE_string('weights', './checkpoints/yolov3.tf',
+from pprint import pprint
+
+flags.DEFINE_string('weights', './is-tracker/etc/checkpoints/yolov3.tf',
                     'path to weights file')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
-flags.DEFINE_string('output', './serving/yolov3/1', 'path to saved_model')
-flags.DEFINE_string('classes', './data/coco.names', 'path to classes file')
-flags.DEFINE_string('image', './data/girl.png', 'path to input image')
+flags.DEFINE_string('output', './is-tracker/src/serving/yolov3/1', 'path to saved_model')
+flags.DEFINE_string('classes', './is-tracker/etc/data/coco.names', 'path to classes file')
+flags.DEFINE_string('image', './is-tracker/etc/data/Camera_1.jpg', 'path to input image')
 
 
 # TODO: remove this after upstream fix
@@ -70,7 +72,11 @@ def main(_argv):
     t1 = time.time()
     outputs = infer(img)
     boxes, scores, classes, nums = outputs["yolo_nms_0"], outputs[
-        "yolo_nms_1"], outputs["yolo_nms_2"], outputs["yolo_nms_3"]
+        "yolo_nms_1_1"], outputs["yolo_nms_2_2"], outputs["yolo_nms_3_3"]
+
+    pprint('=========================================')
+    pprint(outputs)
+    pprint('=========================================')
     t2 = time.time()
     logging.info('time: {}'.format(t2 - t1))
 
