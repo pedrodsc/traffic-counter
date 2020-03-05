@@ -1,3 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: is-tracker
+  namespace: default
+data:
+  detector: |-
+    {
+      "camera_id" : "1",
+      "broker" : "ampq://guest:guest@192.168.1.102:30000",
+      "YOLO" : {
+          "classes" : "/home/is-tracker/etc/data/coco.names",
+          "weights" : "/home/is-tracker/etc/checkpoints/yolov3.tf",
+          "tiny" : false,
+          "size" : 416
+      }
+    }
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,8 +36,18 @@ spec:
       - name: container-name 
         image: pedrovdsc/is-tracker:0.0.1
         command: ["python"]
-        args: ["/home/is-tracker/src/is_tracker/detect_video_is_cameras.py"]
+        args: ["/home/is-tracker/src/is_tracker/detect_video_is_cameras.py","/opt/options/options.json"]
         resources:
           limits: 
             cpu: "2.0"
-            memory: 1536Mi
+            memory: 2048Mi
+        volumeMounts:
+          - name: options
+            mountPath: /opt/options
+      volumes:
+      - name: options
+        configMap:
+          name: is-skeletons-detector
+          items:
+          - key: detector
+            path: options.json

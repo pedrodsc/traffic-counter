@@ -20,7 +20,7 @@ config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
 
-cap = cv2.VideoCapture('dog.mp4')
+cap = cv2.VideoCapture('road.mp4')
 
 def main():
     

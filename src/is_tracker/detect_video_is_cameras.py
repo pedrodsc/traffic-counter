@@ -1,34 +1,33 @@
 # TODO 
 # 
-# 1. Criar um "10.10.2.1:30300/Tracker.1.BBox" com todos os objetos detectados
-# 2. Trocar o centroidTracker para o Tracker com filtro de Kalman
-# 3.Editar o Yolo para retornar um detectedObjects mais legivel do que o atual Yolo.predict()
+# 1. Criar um '10.10.2.1:30300/Tracker.1.BBox' com todos os objetos detectados
+# 2. Editar o Yolo para retornar um detectedObjects mais legivel do que o atual Yolo.predict()
 #   possivelmente criando uma função mãe para chamar (Yolo.detect()??)
-# 4. Trocar os nomes das instancias de Yolo para detector e tracker onde for aplicavel
-# Leia a linha 103
+#  OBS: O ponto 2 é debatível visto que agora eu estou usando o tf.saved_model.load e infer()
+# Leia a linha 126
 
 import time
 import cv2
 import tensorflow as tf
 import numpy as np
+from pprint import pprint
 
 from is_wire.core import Channel, Subscription, Message
 from is_msgs.image_pb2 import ObjectAnnotations, Image
-from pprint import pprint
 
 from yolov3_tf2.models import (YoloV3, YoloV3Tiny)
 from yolov3_tf2.dataset import transform_images
-from yolov3_tf2.utils import draw_outputs
-from pyimagesearch.centroidtracker import CentroidTracker
 
-from utility import load_options, get_np_image, get_rects, to_object_annotations, to_image
+from utility import (load_options, get_np_image, get_rects, to_object_annotations,
+    to_image, draw_outputs)
+from tracker import Tracker, TrackedObject 
 
 config = tf.compat.v1.ConfigProto()
 #config.gpu_options.per_process_gpu_memory_fraction = 0.8
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
 
-centroidTracker = CentroidTracker(20) # Descarta um objeto após 20 frames sem reaparecer
+saved_model = './is-tracker/src/serving/yolov3/1'
 
 def main():
     
@@ -36,13 +35,13 @@ def main():
     pprint('#####################################################')
     pprint(trackerOptions)
     
-    if trackerOptions.YOLO.tiny:
-        yolo = YoloV3Tiny()
-    else:
-        yolo = YoloV3()
+    # if trackerOptions.YOLO.tiny:
+    #     yolo = YoloV3Tiny()
+    # else:
+    #     yolo = YoloV3()
         
-    yolo.load_weights(trackerOptions.YOLO.weights)
-    print('weights loaded')
+    # yolo.load_weights(trackerOptions.YOLO.weights)
+    # print('weights loaded')
 
     class_names = [c.strip() for c in open(trackerOptions.YOLO.classes).readlines()]
     print('classes loaded')
@@ -50,63 +49,82 @@ def main():
     times = []
 
     broker = trackerOptions.broker
-    print("broker: {}".format(broker))
+    print(f'broker: {broker}')
     channel = Channel(broker)
     
     subscription = Subscription(channel)
 
-    topic = "CameraGateway."+str(trackerOptions.camera_id)+".Frame"
-    print("topic: {}".format(topic))
+    topic = f'CameraGateway.{trackerOptions.camera_id}.Frame'
+    print(f'topic: {topic}')
     
     subscription.subscribe(topic=topic)
-    print("subscribed")
+    print('subscribed')
     
+    msg = channel.consume()
+    print('msg consumed')
+    img = msg.unpack(Image)
+    img = get_np_image(img)
+
+    print((img.shape[1],img.shape[0]))
+    tracker = Tracker((img.shape[1],img.shape[0]))
+
+    model = tf.saved_model.load(saved_model)
+    infer = model.signatures[tf.saved_model.DEFAULT_SERVING_SIGNATURE_DEF_KEY]
+
     while True:
         
-        t1 = time.time()
+        t1 = time.time() # t1
+
         msg = channel.consume()
-        print("msg consumed")
         img = msg.unpack(Image)
         
-        t2 = time.time()
+        t2 = time.time() # t2
         
         img = get_np_image(img)
         img_to_draw = img
         
         img = tf.expand_dims(img, 0)
         img = transform_images(img, trackerOptions.YOLO.size)
-
-        t3 = time.time()
-        boxes, scores, classes, nums = yolo.predict(img)
-        t4 = time.time()
-
-       # for i in range(nums[0]):
-            #print('\t{}, {}, {}'.format(class_names[int(classes[0][i])], np.array(scores[0][i]),np.array(boxes[0][i])))
-            
-        rects = get_rects(img_to_draw.shape[0:2], boxes)
+        #detections_list = yolo.predict(img)
         
-        objects = centroidTracker.update(rects)
+        outputs = infer(img)
+        boxes, scores, classes, nums = outputs["yolo_nms_0"], outputs[
+        "yolo_nms_1_1"], outputs["yolo_nms_2_2"], outputs["yolo_nms_3_3"]
+
+        detections_list = [boxes, scores, classes, nums]
+
+        t3 = time.time() #t3
+
+        tracker.update(detections_list)
         
-        t5 = time.time()
+        t4 = time.time() # t4
         
         img_to_draw = draw_outputs(img_to_draw, (boxes, scores, classes, nums), class_names)
         
-        for (objectID, centroid) in objects.items():
-            text = "{}".format(objectID)
-            cv2.putText(img_to_draw, text, (centroid[0], centroid[1]), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 240, 0), 4)
+        for (object_ID, obj) in tracker.tracked_objects.items():
+            text = "{}".format(object_ID)
+            cv2.putText(img_to_draw, text, (int(obj.x[0]), int(obj.x[1])), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 240, 0), 4)
+            if not obj.missing:
+                cv2.putText(img_to_draw, text, (int(obj.z[0]), int(obj.z[1])), cv2.FONT_HERSHEY_COMPLEX, 1, (240, 0, 0), 4)
+
+        t5 = time.time() # t5
+
+        # NÃO TO USANDO AGORA!
+        # msg_time = 'consume {:.4f}'.format(t2 - t1)
+        # yolo_time = 'yolo {:.4f}'.format(t4 - t3)
+        # tracker_time = 'tracker {:.4f}'.format(t5 - t4)
         
-        t6 = time.time()
+        # cv2.putText(img_to_draw, msg_time, (40,40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
+        # cv2.putText(img_to_draw, yolo_time, (40,60), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
+        # cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
         
-        msg_time = 'consume {:.4f}'.format(t2 - t1)
-        yolo_time = 'yolo {:.4f}'.format(t4 - t3)
-        tracker_time = 'tracker {:.4f}'.format(t5 - t4)
-        frame_time = 'total {:.4f}'.format(t6 - t1)
-        
-        cv2.putText(img_to_draw, msg_time, (40,40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, yolo_time, (40,60), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
-        cv2.putText(img_to_draw, frame_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 2)
-        
+        # t6 = time.time()
+        # # O tempo de desenhar o 'draw_time' e o 'frame_time' não são contabilizados pq sim
+        # draw_time = 'draw {:.4f}'.format(t6 - t5)
+        # frame_time = 'total {:.4f}'.format(t6 - t1)
+        # cv2.putText(img_to_draw, draw_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
+        # cv2.putText(img_to_draw, frame_time, (40,120), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
+
         # TODO
         # Publica BBox - protótipo
         
@@ -135,9 +153,12 @@ def main():
         # Publica imagem ##
         yolo_rendered = Message()
         yolo_rendered.pack(to_image(img_to_draw))
-        channel.publish(yolo_rendered, 'Tracker.'+str(trackerOptions.camera_id)+'.Frame')
+        channel.publish(yolo_rendered, f'Tracker.{trackerOptions.camera_id}.Frame')
         
-        ##
+        t6 = time.time() # t6
+
+        print(f'Loop: {(t6-t1)*1000:.1f}ms\tCons: {(t2-t1)*1000:.1f}ms\tInfer: {(t3-t2)*1000:.1f}ms\tTrack: {(t4-t3)*1000:.1f}ms\t\
+        Draw: {(t5-t4)*1000:.1f}ms\tPub: {(t6-t5)*1000:.1f}ms')
         
 if __name__ == '__main__':
     try:
