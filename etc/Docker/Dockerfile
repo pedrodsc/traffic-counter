@@ -54,7 +54,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxrender-dev \
         git \
         unzip \
-        wget
+        wget \
+        vim
         
 RUN apt-get update && \
         apt-get install nvinfer-runtime-trt-repo-ubuntu1804-5.0.2-ga-cuda${CUDA} \
@@ -113,4 +114,5 @@ WORKDIR /home
 RUN git clone https://github.com/pedrodsc/is-tracker.git -b develop
 RUN wget https://pjreddie.com/media/files/yolov3.weights -O /home/is-tracker/etc/data/yolov3.weights
 RUN python /home/is-tracker/src/is_tracker/convert.py --weights /home/is-tracker/etc/data/yolov3.weights --output /home/is-tracker/etc/checkpoints/yolov3.tf
+RUN python /home/is-tracker/src/is_tracker/export_tfserving.py
 RUN rm /home/is-tracker/etc/data/yolov3.weights

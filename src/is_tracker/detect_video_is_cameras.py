@@ -91,7 +91,6 @@ def main():
         boxes, scores, classes, nums = outputs["yolo_nms_0"], outputs[
         "yolo_nms_1_1"], outputs["yolo_nms_2_2"], outputs["yolo_nms_3_3"]
 
-<<<<<<< HEAD
         detections_list = [boxes, scores, classes, nums]
 
         t3 = time.time() #t3
@@ -99,22 +98,6 @@ def main():
         tracker.update(detections_list)
         
         t4 = time.time() # t4
-=======
-        t3 = time.time()
-        #detections_list = yolo.predict(img)
-        
-        outputs = infer(img)
-        boxes, scores, classes, nums = outputs["yolo_nms_0"], outputs[
-        "yolo_nms_1_1"], outputs["yolo_nms_2_2"], outputs["yolo_nms_3_3"]
-
-        
-        detections_list = [boxes, scores, classes, nums]
-
-        t4 = time.time()
-
-        tracker.update(detections_list)
-        t5 = time.time()
->>>>>>> 4ee5fd91e8bb0aa93772bfdaa4e19b95cd2a9f57
         
         img_to_draw = draw_outputs(img_to_draw, (boxes, scores, classes, nums), class_names)
         
@@ -124,7 +107,6 @@ def main():
             if not obj.missing:
                 cv2.putText(img_to_draw, text, (int(obj.z[0]), int(obj.z[1])), cv2.FONT_HERSHEY_COMPLEX, 1, (240, 0, 0), 4)
 
-<<<<<<< HEAD
         t5 = time.time() # t5
 
         # NÃO TO USANDO AGORA!
@@ -142,25 +124,6 @@ def main():
         # frame_time = 'total {:.4f}'.format(t6 - t1)
         # cv2.putText(img_to_draw, draw_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
         # cv2.putText(img_to_draw, frame_time, (40,120), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
-=======
-
-        msg_time = 'consume {:.4f}'.format(t2 - t1)
-        yolo_time = 'yolo {:.4f}'.format(t4 - t3)
-        tracker_time = 'tracker {:.4f}'.format(t5 - t4)
-        
-        
-        
-        cv2.putText(img_to_draw, msg_time, (40,40), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
-        cv2.putText(img_to_draw, yolo_time, (40,60), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
-        cv2.putText(img_to_draw, tracker_time, (40,80), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
-        
-        t6 = time.time()
-        # O tempo de desenhar o 'draw_time' e o 'frame_time' não são contabilizados pq sim
-        draw_time = 'draw {:.4f}'.format(t6 - t5)
-        frame_time = 'total {:.4f}'.format(t6 - t1)
-        cv2.putText(img_to_draw, draw_time, (40,100), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
-        cv2.putText(img_to_draw, frame_time, (40,120), cv2.FONT_HERSHEY_COMPLEX, 0.8, (10, 10, 10), 1)
->>>>>>> 4ee5fd91e8bb0aa93772bfdaa4e19b95cd2a9f57
 
         # TODO
         # Publica BBox - protótipo
@@ -192,15 +155,10 @@ def main():
         yolo_rendered.pack(to_image(img_to_draw))
         channel.publish(yolo_rendered, f'Tracker.{trackerOptions.camera_id}.Frame')
         
-<<<<<<< HEAD
         t6 = time.time() # t6
 
         print(f'Loop: {(t6-t1)*1000:.1f}ms\tCons: {(t2-t1)*1000:.1f}ms\tInfer: {(t3-t2)*1000:.1f}ms\tTrack: {(t4-t3)*1000:.1f}ms\t\
         Draw: {(t5-t4)*1000:.1f}ms\tPub: {(t6-t5)*1000:.1f}ms')
-=======
-        t7 = time.time()
-        print(f'Loop time: {(t7-t1)*1000:.1f}ms')
->>>>>>> 4ee5fd91e8bb0aa93772bfdaa4e19b95cd2a9f57
         
 if __name__ == '__main__':
     try:
