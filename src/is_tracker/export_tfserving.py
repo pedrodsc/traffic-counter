@@ -15,12 +15,15 @@ from tensorflow.python.util import nest
 
 from pprint import pprint
 
+<<<<<<< HEAD
 
 config = tf.compat.v1.ConfigProto()
 #config.gpu_options.per_process_gpu_memory_fraction = 0.8
 config.gpu_options.allow_growth = True
 sess = tf.compat.v1.Session(config=config)
 
+=======
+>>>>>>> 4ee5fd91e8bb0aa93772bfdaa4e19b95cd2a9f57
 flags.DEFINE_string('weights', './is-tracker/etc/checkpoints/yolov3.tf',
                     'path to weights file')
 flags.DEFINE_boolean('tiny', False, 'yolov3 or yolov3-tiny')
