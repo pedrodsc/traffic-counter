@@ -17,7 +17,13 @@ def load_options():
             except Exception as ex:
                 print('Unable to load options from \'{}\'. \n{}'.format(op_file, ex))
     except Exception as ex:
-        print('Unable to open file \'{}\''.format(op_file))
+        print('Unable to open file \'{}\'. Opening default configuration.'.format(op_file))
+        with open(/home/is-tracker/etc/conf/options.json, 'r') as f:
+            try:
+                op = Parse(f.read(), TrackerOptions())
+                return op
+            except Exception as ex:
+                print('Unable to load options from \'{}\'. \n{}'.format(op_file, ex))
 
 def get_np_image(input_image):
     if isinstance(input_image, np.ndarray):

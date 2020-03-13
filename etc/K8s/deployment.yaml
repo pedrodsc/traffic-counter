@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: container-name 
-        image: pedrovdsc/is-tracker:0.0.1
+        image: pedrovdsc/is-tracker:0.0.2
         command: ["python"]
         args: ["/home/is-tracker/src/is_tracker/detect_video_is_cameras.py","/opt/options/options.json"]
         resources:
@@ -47,7 +47,7 @@ spec:
       volumes:
       - name: options
         configMap:
-          name: is-skeletons-detector
+          name: is-tracker
           items:
           - key: detector
             path: options.json
