@@ -4,11 +4,53 @@ message YOLO {
     string classes = 1; //"../../etc/data/coco.names"
     string weights = 2; //"../../etc/checkpoints/yolov3.tf"
     bool tiny = 3; //"False"
-    uint32 size = 4; //"416"
+    uint32 size = 4; //"320, 416, 608" qualquer size = 320 + N*32 <= 608
+}
+
+message DrawingParams {
+    bool show_boxes = 1; 
+    bool show_paths = 2; 
+    bool show_ids = 3;
+    bool show_names = 4;
+    bool show_scores = 5;
+    // All colors in BGR
+    repeated uint32 box_color = 6;
+    repeated uint32 missing_box_color = 7;
+    repeated uint32 path_color = 8; 
+    repeated uint32 id_color = 9;
+    repeated uint32 name_color = 10;
+    uint32 box_thickness = 11; 
+    uint32 path_thickness = 12; 
+    uint32 id_size = 13;
+    uint32 name_size = 14;
+}
+
+message KalmanParams {
+    float R = 1;
+    float Q = 2;
+    float dt = 3;
+}
+
+message Commands {
+    bool untrack_all = 1; // If True, untracks all current objects.
+    bool reset_tracker = 2;
+    bool stop = 3;
 }
 
 message TrackerOptions {
-    string camera_id = 1;
-    string broker = 2;
-    YOLO YOLO = 3;
+    repeated string filter = 1;
+    uint32 max_missing_frames = 2;
+    uint32 max_radius = 3;
+    KalmanParams KalmanParams = 4;
+}
+
+message Options {
+    string broker = 1;
+    string consume_topic = 2;
+    string publish_topic = 3;
+    YOLO YOLO = 4;
+    DrawingParams DrawingParams = 5;
+    TrackerOptions TrackerOptions = 6;
+    Commands Commands = 7;
+    bool verbose = 8; // For debugging
 }

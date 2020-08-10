@@ -1,10 +1,43 @@
 {
-    "camera_id" : "1",
-    "broker" : "ampq://guest:guest@10.10.2.3:30000",
+    "broker" : "ampq://guest:guest@192.168.1.102:30000",
+    "consume_topic" : "CameraGateway.0.Frame",
+    "publish_topic" : "Tracker.Frame",
     "YOLO" : {
         "classes" : "/home/is-tracker/etc/data/coco.names",
         "weights" : "/home/is-tracker/etc/checkpoints/yolov3.tf",
         "tiny" : false,
         "size" : 416
-    }
+    },
+    "DrawingParams" : {
+        "show_boxes" : true,
+        "show_paths" : true,
+        "show_ids" : true,
+        "show_names" : true,
+        "show_scores" : false,
+        "box_color" : [255,0,0],
+        "missing_box_color" : [0,0,200],
+        "path_color" : [0,255,0],
+        "id_color" : [0,0,0],
+        "name_color" : [200,0,200],
+        "box_thickness" : 2,
+        "path_thickness" : 2,
+        "id_size" : 1,
+        "name_size" : 1
+    },
+    "TrackerOptions" : {
+        "filter" : ["person","bicycle","car","motorbike","bus","truck"],
+        "max_missing_frames" : 10,
+        "max_radius" : 80,
+        "KalmanParams" : {
+            "R" : 0.5,
+            "Q" : 1.1,
+            "dt" : 0.075
+        }
+    },
+    "Commands" : {
+        "untrack_all" : false,
+        "reset_tracker" : false,
+        "stop" : false
+    },
+    "verbose" : true
 }
