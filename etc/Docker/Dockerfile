@@ -20,7 +20,8 @@ RUN pip --no-cache-dir install --upgrade \
     is-wire
 
 RUN pip --no-cache-dir install --upgrade protobuf
-
+# Something funky was going on. This fixes it.
+RUN apt install -y --no-install-recommends libgl1-mesa-glx
 # Download and convert yolov3.weights
 WORKDIR /home
 RUN git clone https://github.com/pedrodsc/is-tracker.git -b develop
