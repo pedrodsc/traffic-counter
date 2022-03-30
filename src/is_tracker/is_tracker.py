@@ -78,7 +78,7 @@ class Is_Tracker(object):
         t3 = time.time() #t3
 
         self.tracker.update(detections_list)
-        
+
         t4 = time.time() # t4
         
         # img_to_draw = draw_outputs2(img_to_draw, self.tracker.tracked_objects.items(),

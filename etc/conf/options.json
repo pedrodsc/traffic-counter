@@ -1,5 +1,5 @@
 {
-    "broker" : "ampq://guest:guest@192.168.1.102:30000",
+    "broker" : "ampq://guest:guest@192.168.1.11:30000",
     "consume_topic" : "CameraGateway.0.Frame",
     "publish_topic" : "Tracker.Frame",
     "YOLO" : {
